@@ -1,0 +1,18 @@
+1. Compile and execute the program for different values. The program appears to be returning incorrect computations (e.g., for 𝑛 = 1 it returns 0). Why is that?
+
+The program is returning the incorrect computation because the parent function was calculating the total instance in A(x) and the child process was calcualting its own total in B(x). Since the two processes do not share the same memory space, the 'Total' variable in the parent process was not being updated with the value of the 'Total' variable calculated in B(x) for the child process. Therefore, the total was not as expected. With the addition of exit() and wait() system calls, the parent process can wait for the child process to complete and receive the value prior to printing it.
+
+2- Modify the program code to fix the issue using “wait()” and exit() system calls. Explain how you fixed the issue.
+
+The parent process uses os.wait() to wait for the child process to finish and get its return value by setting it to 'status'. The value is the high byte (), as such we need to shift it right by 8 bits to get the actual value. After that, we add the value to Total. Now, Total is the sum of both processes, and the output is the expected output. It is important to note that the maximum  value that can be passed from the child to the parent process is 255. This will be talked about in the next two question/answers.
+
+3- After fixing the issue, you may notice that starting from a certain value n, the returned sum becomes incorrect. What is the value of n? Explain the reason behind this limitation.
+
+At n=26, the summation returns an incorrect value compared to what was expected. This is because the returned value from B() is greater then 255. Because the status is used as the value to pass between the child and parent process, it is limited to 8 bits. Therefore, once the returned value surpassed 256, (at n=26, B returns 260) the value overflows, and thus gets lost in conversion to binary.
+
+4- If we switch the function of the parent and child process (i.e., A(.) by B(.) and B(.) by A(.) in the source code), you may notice that starting from a certain value n, the returned sum becomes incorrect. What would be the value of n?
+
+With A(x) as the child process, the number of correct n's increases as the return values for A() are lower than B(). The point at which A() returns a value greater than 255 is at n = 46 (A() returns 276).
+
+As a group:
+Looked at assignment together, learned about what each function does, and we all tried to implement a solution. After finding the solution, we answered the four questions together, and then each person put it into their own words. Crystal did Q1 as she identified the problem. Ronald did Q2 as he found the code solution/fix to the problem. Aryan did Q3 and Q4 as he grasped the concepts of byte shifting and status. 
